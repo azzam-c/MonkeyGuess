@@ -8,6 +8,7 @@ body {
   display: none;       /* initially hidden */
   margin: 20px auto;
   width: 200px;
+  text-align: center;
 }
 
 .input-container {
@@ -37,3 +38,4 @@ body {
   margin: 20px auto;
   max-width: 800px;
 }
+
