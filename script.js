@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const passwordInput = document.getElementById("passwordInput");
   const attemptOutput = document.getElementById("attemptOutput");
   const theoreticalOutput = document.getElementById("theoreticalOutput");
+  const strengthOutput = document.getElementById("strengthOutput");
   const monkeyGif = document.getElementById("monkeyGif");
 
   let interval = null;
@@ -42,6 +43,12 @@ document.addEventListener("DOMContentLoaded", () => {
     return `(Theoretical time: ${parts.join(' ')})`;
   }
 
+  function getPasswordStrength(totalSeconds) {
+    if (totalSeconds < 3600) return "⚠️ Consider changing your password, it’s very weak!";
+    if (totalSeconds < 3600*24*7*4) return "Medium strength";
+    return "✅ Very strong!";
+  }
+
   function startSimulation() {
     const password = passwordInput.value.trim();
     if (!password) {
@@ -56,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const expectedSeconds = expectedAttempts / guessesPerSecond;
 
     theoreticalOutput.textContent = formatTheoreticalTime(expectedSeconds);
+    strengthOutput.textContent = getPasswordStrength(expectedSeconds);
 
     startButton.disabled = true;
     monkeyGif.style.display = "block";
@@ -71,14 +79,13 @@ document.addEventListener("DOMContentLoaded", () => {
       attemptOutput.textContent = `Attempt #${count}: ${attempt}`;
     }, 50);
 
-    // Stop after theoretical expected time
     timeout = setTimeout(() => {
       clearInterval(interval);
       interval = null;
       attemptOutput.textContent = `Done! Password: '${password}'`;
       monkeyGif.style.display = "none";
       startButton.disabled = false;
-    }, expectedSeconds * 1000); // convert seconds to milliseconds
+    }, expectedSeconds * 1000);
   }
 
   startButton.addEventListener("click", startSimulation);
@@ -95,8 +102,5 @@ document.addEventListener("DOMContentLoaded", () => {
     passwordInput.value = "";
     attemptOutput.textContent = "";
     theoreticalOutput.textContent = "";
+    strengthOutput.textContent = "";
     monkeyGif.style.display = "none";
-    startButton.disabled = false;
-    passwordInput.focus();
-  });
-});
