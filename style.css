@@ -5,7 +5,6 @@ body {
 }
 
 #monkeyGif {
-  display: none; /* hidden until start */
   width: 200px;
   margin: 20px auto;
   display: block;
