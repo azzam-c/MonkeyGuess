@@ -1,53 +1,41 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // === DOM elements ===
   const startButton = document.getElementById("startButton");
   const passwordInput = document.getElementById("passwordInput");
   const output = document.getElementById("output");
   const monkeyGif = document.getElementById("monkeyGif");
 
-  console.log("script.js loaded successfully ✅");
-
-  // === Character set ===
-  const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-  // === Monkey typing simulation ===
-  function startSimulation() {
-    const target = passwordInput.value;
-    if (!target) {
+  startButton.addEventListener("click", () => {
+    const password = passwordInput.value.trim();
+    if (password === "") {
       output.textContent = "Please enter a password first!";
       return;
     }
 
-    output.textContent = "🐒 Monkey started typing...";
-    let attempt = "";
-    let iterations = 0;
+    output.textContent = "Monkey typing...";
+    monkeyGif.style.display = "block";
 
-    // Show the monkey GIF (optional)
-    if (monkeyGif) {
-      monkeyGif.style.display = "block";
+    simulateTyping(password, output, monkeyGif);
+  });
+});
+
+function simulateTyping(target, output, monkeyGif) {
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let attempt = "";
+  let count = 0;
+
+  const interval = setInterval(() => {
+    attempt = "";
+    for (let i = 0; i < target.length; i++) {
+      attempt += charset.charAt(Math.floor(Math.random() * charset.length));
     }
 
-    // Monkey typing loop
-    const interval = setInterval(() => {
-      attempt = "";
-      for (let i = 0; i < target.length; i++) {
-        attempt += characters.charAt(Math.floor(Math.random() * characters.length));
-      }
+    count++;
+    output.textContent = `Monkey typed: ${attempt} (Attempt ${count})`;
 
-      iterations++;
-      output.textContent = `Attempt #${iterations}: ${attempt}`;
-
-      if (attempt === target) {
-        clearInterval(interval);
-        output.textContent = `🎉 Monkey typed your password after ${iterations.toLocaleString()} attempts!`;
-
-        if (monkeyGif) {
-          monkeyGif.style.display = "none";
-        }
-      }
-    }, 50);
-  }
-
-  // === Connect button to function ===
-  startButton.addEventListener("click", startSimulation);
-});
+    if (attempt === target) {
+      clearInterval(interval);
+      monkeyGif.style.display = "none";
+      output.textContent = `🎉 The monkey guessed your password '${target}' in ${count} attempts!`;
+    }
+  }, 100);
+}
