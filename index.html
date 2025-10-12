@@ -7,28 +7,16 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1> Infinite Monkey Password Guesser</h1>
+  <h1>Monkey Password Simulator</h1>
 
-  <input id="passwordInput" placeholder="Enter your password">
-  <select id="charsetSelect">
-    <option value="lowercase">Lowercase only</option>
-    <option value="alphanumeric">Alphanumeric</option>
-    <option value="ascii">Full ASCII</option>
-  </select>
-  <input id="speedInput" placeholder="Guesses per second (e.g. 1000)">
-  <select id="modeSelect">
-    <option value="simulation">Simulation</option>
-    <option value="estimator">Estimator</option>
-  </select>
+  <img id="monkeyGif" src="monkey.gif" alt="Typing monkey" style="display:none; width:200px; margin-bottom:10px;">
 
-  <button id="startBtn">Start</button>
-
-  <div id="typingLabel">Monkeys are waiting...</div>
-  <div id="progressBar">
-    <div id="progressFill"></div>
+  <div>
+    <input type="text" id="passwordInput" placeholder="Enter your password">
+    <button id="startButton">Start</button>
   </div>
 
-  <img id="monkeyGif" src="monkey_typing.gif" style="display:none; width:150px;">
+  <div id="output"></div>
 
   <script src="script.js"></script>
 </body>
