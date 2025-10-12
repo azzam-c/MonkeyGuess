@@ -8,16 +8,19 @@
 </head>
 <body>
   <h1>Monkey Password Simulator</h1>
- <p class="description">
+
+  <p class="description">
     The infinite monkey theorem is a thought experiment that states if a monkey hits keys at random on a typewriter for all of eternity, it will eventually type out any complete work of literature, down to the last character, such as the complete works of William Shakespeare. Type any password below to see how long it would take for a monkey to guess it! Given the monkey is typing until the end of time...
   </p>
-  <!-- Monkey GIF -->
-  <img id="monkeyGif" src="monkey.gif" alt="Typing monkey">
 
-  <!-- Input & Button -->
+  <!-- Monkey GIF -->
+  <img id="monkeyGif" src="monkey.gif" alt="Typing monkey" style="display:none;">
+
+  <!-- Input & Buttons -->
   <div class="input-container">
     <input type="text" id="passwordInput" placeholder="Enter your password">
     <button id="startButton">Start</button>
+    <button id="resetButton">Reset</button>
   </div>
 
   <div id="output"></div>
@@ -25,4 +28,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
