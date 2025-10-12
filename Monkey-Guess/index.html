@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monkey Password Simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1> Infinite Monkey Password Guesser</h1>
+
+  <input id="passwordInput" placeholder="Enter your password">
+  <select id="charsetSelect">
+    <option value="lowercase">Lowercase only</option>
+    <option value="alphanumeric">Alphanumeric</option>
+    <option value="ascii">Full ASCII</option>
+  </select>
+  <input id="speedInput" placeholder="Guesses per second (e.g. 1000)">
+  <select id="modeSelect">
+    <option value="simulation">Simulation</option>
+    <option value="estimator">Estimator</option>
+  </select>
+
+  <button id="startBtn">Start</button>
+
+  <div id="typingLabel">Monkeys are waiting...</div>
+  <div id="progressBar">
+    <div id="progressFill"></div>
+  </div>
+
+  <img id="monkeyGif" src="monkey_typing.gif" style="display:none; width:150px;">
+
+  <script src="script.js"></script>
+</body>
+</html>

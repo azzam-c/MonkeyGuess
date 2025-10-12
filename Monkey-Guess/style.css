@@ -1,0 +1,21 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #fafafa;
+  padding: 40px;
+}
+
+#progressBar {
+  width: 80%;
+  height: 20px;
+  background-color: #ddd;
+  margin: 20px auto;
+  border-radius: 10px;
+}
+
+#progressFill {
+  width: 0%;
+  height: 100%;
+  background-color: #4caf50;
+  border-radius: 10px;
+}
