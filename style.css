@@ -5,10 +5,10 @@ body {
 }
 
 #monkeyGif {
-  display: none;       /* initially hidden */
-  margin: 20px auto;
+  display: none; /* hidden until start */
   width: 200px;
-  text-align: center;
+  margin: 20px auto;
+  display: block;
 }
 
 .input-container {
@@ -27,9 +27,15 @@ body {
   margin-left: 5px;
 }
 
-#output {
+#attemptOutput, #theoreticalOutput, #strengthOutput {
   margin-top: 20px;
   white-space: pre-line;
+}
+
+#strengthOutput {
+  font-style: italic;
+  color: #333;
+  margin-top: 10px;
 }
 
 .description {
@@ -38,4 +44,3 @@ body {
   margin: 20px auto;
   max-width: 800px;
 }
-
