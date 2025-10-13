@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const startButton = document.getElementById("startButton");
   const resetButton = document.getElementById("resetButton");
   const passwordInput = document.getElementById("passwordInput");
+  const gpsInput = document.getElementById("gpsInput");
+  const gpsHint = document.getElementById("gpsHint");
   const attemptOutput = document.getElementById("attemptOutput");
   const theoreticalOutput = document.getElementById("theoreticalOutput");
   const strengthOutput = document.getElementById("strengthOutput");
@@ -28,6 +30,24 @@ document.addEventListener("DOMContentLoaded", () => {
     stopId = null;
   }
 
+  function sanitizeRate(val) {
+    const n = Number(val);
+    // Clamp to a sensible range to avoid Infinity/NaN explosions
+    if (!isFinite(n) || n <= 0) return 1;
+    // Allow very large offline rates but cap UI math a bit
+    return Math.min(n, 1e12);
+  }
+
+  function getGuessesPerSecond() {
+    const gps = sanitizeRate(gpsInput.value);
+    // keep the input value clean if user entered garbage
+    if (String(gpsInput.value).trim() === "" || gpsInput.value <= 0) {
+      gpsInput.value = String(gps);
+    }
+    gpsHint.textContent = `${gps.toLocaleString()} guesses/sec`;
+    return gps;
+  }
+
   // Random guess of fixed length from the pool
   function randomGuess(len, pool = ASCII_PRINTABLE) {
     let s = "";
@@ -38,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return s;
   }
 
-  // Format a (possibly huge) combinations count as scientific notation
+  // Format combinations as scientific notation
   function formatCombos(poolSize, length) {
     const log10 = length * Math.log10(poolSize);
     const exp = Math.floor(log10);
@@ -79,7 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (minutes) parts.push(`${minutes} minute${minutes !== 1 ? "s" : ""}`);
     parts.push(`${seconds} seconds`);
 
-    // Keep it readable (first 3 largest units + seconds)
     return parts.slice(0, 3).join(", ") + (parts.length > 3 ? ", ..." : "");
   }
 
@@ -92,29 +111,43 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Core math: pool^L possibilities; average attempts ~ (N + 1) / 2
-  function computeStats(password) {
+  function computeStats(password, guessesPerSecond) {
     const L = password.length;
     const poolSize = ASCII_PRINTABLE.length;
 
-    // Entropy and combinations in log-space to avoid overflow
     const log2N = L * Math.log2(poolSize);
-    const log10N = L * Math.log10(poolSize);
-
     // Expected attempts ~ N/2  => log2(N/2) = log2N - 1
-    const guessesPerSecond = 5; // tweak if you like
     const expectedSeconds = Math.pow(2, Math.max(0, log2N - 1)) / guessesPerSecond;
 
-    return {
-      L,
-      poolSize,
-      log2N,
-      log10N,
-      expectedSeconds,
-      guessesPerSecond
-    };
+    return { L, poolSize, log2N, expectedSeconds };
+  }
+
+  function updateTheory() {
+    const pwd = passwordInput.value || "";
+    if (!pwd.length) {
+      theoreticalOutput.textContent = "";
+      strengthOutput.textContent = "";
+      return;
+    }
+    const gps = getGuessesPerSecond();
+    const stats = computeStats(pwd, gps);
+
+    theoreticalOutput.textContent =
+      `Characters on keyboard: ${stats.poolSize}\n` +
+      `Password length: ${stats.L}\n` +
+      `Combinations: ≈ ${formatCombos(stats.poolSize, stats.L)}\n` +
+      `Entropy: ${stats.log2N.toFixed(1)} bits\n` +
+      `Average time at ${gps.toLocaleString()} guesses/sec: ${formatDuration(stats.expectedSeconds)}`;
+
+    strengthOutput.textContent = classifyStrength(stats.log2N);
+    return { stats, gps };
   }
 
   // ---- UI actions ----------------------------------------------------------
+
+  // Live updates when user types password or changes rate
+  passwordInput.addEventListener("input", updateTheory);
+  gpsInput.addEventListener("input", updateTheory);
 
   startButton.addEventListener("click", () => {
     clearTimers();
@@ -130,32 +163,29 @@ document.addEventListener("DOMContentLoaded", () => {
     // Show the monkey!
     monkeyGif.style.display = "block";
 
-    // Compute stats and print theoretical results
-    const stats = computeStats(pwd);
+    const { stats, gps } = updateTheory() || {};
+    const rate = gps || getGuessesPerSecond();
 
-    theoreticalOutput.textContent =
-      `Characters on keyboard: ${stats.poolSize}\n` +
-      `Password length: ${stats.L}\n` +
-      `Combinations: ≈ ${formatCombos(stats.poolSize, stats.L)}\n` +
-      `Entropy: ${stats.log2N.toFixed(1)} bits\n` +
-      `Average time at ${stats.guessesPerSecond}/sec: ${formatDuration(stats.expectedSeconds)}`;
-
-    strengthOutput.textContent = classifyStrength(stats.log2N);
-
-    // Animate attempts (purely for fun)
+    // Animate attempts near the chosen rate without spamming the DOM.
+    // We tick every 100ms and increment attempts by (rate * 0.1).
     let attempts = 0;
+    const TICK_MS = 100;
     intervalId = setInterval(() => {
-      attempts++;
+      const perTick = Math.max(1, Math.round(rate * (TICK_MS / 1000)));
+      attempts += perTick;
       const guess = randomGuess(pwd.length);
       attemptOutput.textContent =
         `Attempt ${attempts.toLocaleString()}:\n${guess}`;
-    }, 100);
+    }, TICK_MS);
 
-    // Stop the animation after a few seconds (or keep going if you want)
+    // Keep the little demo short and sweet
     stopId = setTimeout(() => {
       clearTimers();
+      const again = computeStats(pwd, rate);
       attemptOutput.textContent +=
-        `\n\n(We’ll be here a while… On average it would take ${formatDuration(stats.expectedSeconds)} to hit “${pwd}”.)`;
+        `\n\n(We’ll be here a while… On average it would take ${formatDuration(
+          again.expectedSeconds
+        )} to hit “${pwd}”.)`;
     }, 8000);
   });
 
@@ -166,5 +196,9 @@ document.addEventListener("DOMContentLoaded", () => {
     attemptOutput.textContent = "";
     theoreticalOutput.textContent = "";
     strengthOutput.textContent = "";
+    // Keep the current GPS value; users often want to try another password at same rate
   });
+
+  // Initialize helper text on load
+  getGuessesPerSecond();
 });
