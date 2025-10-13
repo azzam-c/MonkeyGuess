@@ -1,25 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Monkey Password Simulator</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <h1>Monkey Password Simulator</h1>
 
   <p class="description">
-    The infinite monkey theorem is a thought experiment that states if a monkey hits keys at random on a typewriter for all of eternity, it will eventually type out any complete work of literature, down to the last character, such as the complete works of William Shakespeare. Type any password below to see how long it would take for a monkey to guess it! Given the monkey is typing until the end of time...
+    The infinite monkey theorem is a thought experiment that states if a monkey hits keys at random on a typewriter for all of eternity, it will eventually type out any complete work of literature, down to the last character, such as the complete works of William Shakespeare. Type any password below to see how long it would take for a monkey to guess it!
   </p>
 
   <!-- GIF hidden until Start -->
-  <img id="monkeyGif" src="monkey.gif" alt="Typing monkey" style="display:none;">
+  <img id="monkeyGif" src="monkey.gif" alt="Typing monkey" style="display:none;"/>
 
   <div class="input-container">
-    <input type="text" id="passwordInput" placeholder="Enter your password">
-    <button id="startButton">Start</button>
-    <button id="resetButton">Reset</button>
+    <div class="controls-grid">
+      <label for="passwordInput">Password</label>
+      <input type="text" id="passwordInput" placeholder="Enter your password"/>
+
+      <label for="gpsInput">Guesses per second</label>
+      <div class="gps-field">
+        <input
+          type="number"
+          id="gpsInput"
+          min="0.1"
+          step="0.1"
+          value="5"
+          list="gpsPresets"
+          aria-label="Guesses per second"
+        />
+        <datalist id="gpsPresets">
+          <option value="1"></option>
+          <option value="5"></option>
+          <option value="10"></option>
+          <option value="100"></option>
+          <option value="1000"></option>
+          <option value="10000"></option>
+          <option value="1000000"></option>
+          <option value="10000000000"></option>
+        </datalist>
+        <small id="gpsHint">Use presets or type any rate</small>
+      </div>
+
+      <div class="button-row">
+        <button id="startButton">Start</button>
+        <button id="resetButton" class="secondary">Reset</button>
+      </div>
+    </div>
   </div>
 
   <div id="attemptOutput"></div>
